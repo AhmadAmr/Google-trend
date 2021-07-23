@@ -78,9 +78,9 @@ WSGI_APPLICATION = 'GoogleTrend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME':'dbname',
+        'NAME':'trend',
         'USER':'postgres',
-        'PASSWORD':'dbpassword',
+        'PASSWORD':'password',
         'HOST': 'localhost',
         
         
