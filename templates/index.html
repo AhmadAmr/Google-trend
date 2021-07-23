@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Google trends</title>
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+        />
+
+        <style>
+            #chartdiv {
+                width: 100%;
+                height: 600px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="form-group">
+                <div class="row">
+                    <label for="input">Enter term</label>
+                    <div class="col">
+                        <input type="text" class="form-control" id="term" />
+                    </div>
+                    <div class="col">
+                        <button
+                            type="button"
+                            class="btn btn-primary"
+                            onclick="chart('miamiheat')"
+                        >
+                            Draw chart
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="chartdiv"></div>
+        
+    </body>
+</html>
+<script src="//cdn.amcharts.com/lib/4/core.js"></script>
+<script src="//cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
+<script>
+    function chart(kw) {
+        var chartdata = [];
+        var term = document.getElementById("term").value;
+        $.ajax({
+            type: "GET",
+            url: "/api/historical/"+term+"/",
+            success: function (data) {
+                chartdata = data;
+                var chart = am4core.create("chartdiv", am4charts.XYChart);
+                chart.data = chartdata;
+                var categoryAxis = chart.xAxes.push(
+                    new am4charts.CategoryAxis()
+                );
+                categoryAxis.dataFields.category = "date";
+                var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+                var series1 = chart.series.push(new am4charts.LineSeries());
+                series1.dataFields.valueY = "term";
+                series1.dataFields.categoryX = "date";
+                series1.name = "Cars";
+                series1.strokeWidth = 5;
+                series1.tensionX = 0.7;
+                series1.bullets.push(new am4charts.CircleBullet());
+                chart.legend = new am4charts.Legend();
+            },
+        });
+    }
+</script>
