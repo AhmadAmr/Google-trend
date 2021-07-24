@@ -22,15 +22,19 @@
         <form>
             <div class="form-group">
                 <div class="row">
-                    <label for="input">Enter term</label>
+                    <label for="input">Enter first term</label>
                     <div class="col">
-                        <input type="text" class="form-control" id="term"  required/>
+                        <input type="text" class="form-control" id="first_term"  required/>
+                    </div>
+                     <label for="input">Enter second term</label>
+                    <div class="col">
+                        <input type="text" class="form-control" id="second_term"  required/>
                     </div>
                     <div class="col">
                         <button
                             type="button"
                             class="btn btn-primary"
-                            onclick="chart('miamiheat')"
+                            onclick="chart()"
                         >
                             Draw chart
                         </button>
@@ -45,31 +49,28 @@
 </html>
 <script src="//cdn.amcharts.com/lib/4/core.js"></script>
 <script src="//cdn.amcharts.com/lib/4/charts.js"></script>
+<script src="//cdn.amcharts.com/lib/4/maps.js"></script>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js"></script>
 <script>
-    function chart(kw) {
+    function chart() {
         var chartdata = [];
-        var term = document.getElementById("term").value;
+        var first_term = document.getElementById("first_term").value;
+        var second_term = document.getElementById("second_term").value;
         $.ajax({
-            type: "GET",
-            url: "/api/historical/"+term+"/",
+            type: "POST",
+            url: "/api/map/",
+             data: {
+             first_term: first_term,
+             second_term:second_term
+             },
             success: function (data) {
+                console.log(data);
                 chartdata = data;
-                var chart = am4core.create("chartdiv", am4charts.XYChart);
+                var chart = am4core.create("chartdiv", am4maps.MapChart);
                 chart.data = chartdata;
-                var categoryAxis = chart.xAxes.push(
-                    new am4charts.CategoryAxis()
-                );
-                categoryAxis.dataFields.category = "date";
-                var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-                var series1 = chart.series.push(new am4charts.LineSeries());
-                series1.dataFields.valueY = "term";
-                series1.dataFields.categoryX = "date";
-                series1.name = "Cars";
-                series1.strokeWidth = 5;
-                series1.tensionX = 0.7;
-                series1.bullets.push(new am4charts.CircleBullet());
+                chart.projection = new am4maps.projections.Miller();
                 chart.legend = new am4charts.Legend();
             },
         });
